@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+</head>
+<body>
+<p>Выбранный отдел - {{ text }}</p>
+<table>
+    <tr>
+        <th>ID сотрудника</th>
+        <th>ФИО</th>
+        <th>Дата рождения</th>
+        <th>Адрес</th>
+        <th>Образование</th>
+        <th>Зарплата</th>
+        <th>Дата приема</th>
+        <th>Дата увольнения</th>
+        <th>ID отдела</th>
+    </tr>
+    {% for line in report %}
+        <tr>
+            <td>{{ line.id_work }}</td>
+            <td>{{ line.FName_worker }}</td>
+            <td>{{ line.birth }}</td>
+            <td>{{ line.address_w }}</td>
+            <td>{{ line.educat }}</td>
+            <td>{{ line.salary }}</td>
+            <td>{{ line.date_res }}</td>
+            <td>{{ line.date_dis }}</td>
+            <td>{{ line.id_struct }}</td>
+        </tr>
+    {% endfor %}
+</table>
+<button class="return" onclick="window.location.href = '/requests';">Назад в меню запросов</button>
+<br>
+<button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>
+</body>
+</html>

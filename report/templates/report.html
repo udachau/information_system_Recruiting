@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчеты</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+</head>
+<body>
+{% if table %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Код подразделения</th>
+            <th>Название должности</th>
+            <th>Количество открытий \n вакансии</th>
+            <th>Среднее количество дней,\n когда она была открыта</th>
+        </tr>
+    {% for string in table %}
+        <tr>
+            <td>{{ string['id_rep'] }}</td>
+            <td>{{ string['id_structure'] }}</td>
+            <td>{{ string['name_vac'] }}</td>
+            <td>{{ string['num_open'] }}</td>
+            <td>{{ string['avg_num_days'] }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>В базе данных нет записей об этом периоде. Отчет не был создан.</p>
+{% endif %}
+<button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>
+</body>
+</html>

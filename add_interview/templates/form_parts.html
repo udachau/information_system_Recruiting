@@ -1,0 +1,71 @@
+{% extends "addform.html" %}
+
+{% block recruiter %}
+    <form method="post" action="/add">
+    <fieldset>
+        <legend>Введите данные о собеседовании</legend>
+        <label>
+            <span>Выберите работника, который будет проводить собеседование</span>
+            <select required name="recruiter">
+                {% for line in recruiter %}
+                    <option>
+                        {{ line.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="submit" name="send" value="Выбрать">
+    </fieldset>
+    </form>
+{% endblock %}
+
+{% block vacancy %}
+    <form method="post" action="/add">
+    <fieldset>
+        <legend>Введите данные о собеседовании</legend>
+        <label>
+            <span>Выберите открытую вакансию</span>
+            <select required name="vacancy">
+                {% for line in vacancy %}
+                    <option>
+                        {{ line.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="submit" name="send" value="Выбрать">
+    </fieldset>
+    </form>
+{% endblock %}
+
+{% block candidate %}
+    <form method="post" action="/add">
+    <fieldset>
+        <legend>Введите данные о собеседовании</legend>
+        <label>
+            <span>Выберите кандидата</span>
+            <select required name="candidate">
+                {% for line in candidate %}
+                    <option>
+                        {{ line.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="submit" name="send" value="Выбрать">
+    </fieldset>
+    </form>
+{% endblock %}
+
+{% block date %}
+    <form method="post" action="/add">
+    <fieldset>
+        <legend>Введите данные о собеседовании</legend>
+        <label>
+            <span>Выберите дату собеседования</span>
+            <input type="date" name="date" value="{{ selected }}">
+        </label>
+        <input type="submit" name="send" value="Выбрать">
+    </fieldset>
+    </form>
+{% endblock %}

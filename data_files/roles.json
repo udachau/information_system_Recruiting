@@ -1,0 +1,11 @@
+[
+  {"url": "/auth", "roles": ["guest", "boss", "recruter"]},
+  {"url": "/", "roles": ["boss", "recruter"]},
+  {"url": "/requests", "roles": ["boss", "recruter"]},
+  {"url": "/request1", "roles": ["boss", "recruter"]},
+  {"url": "/request2", "roles": ["boss", "recruter"]},
+  {"url": "/request3", "roles": ["boss", "recruter"]},
+  {"url": "/add", "roles": ["boss"]},
+  {"url": "/save", "roles": ["boss"]},
+  {"url": "/report", "roles": ["boss","recruter"]}
+]

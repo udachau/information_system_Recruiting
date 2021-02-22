@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+</head>
+<body>
+<form method="post" action="/request{{ request }}">
+    <fieldset>
+        <legend>Данные для запроса</legend>
+            <label>
+                Введите год:
+                <input type="number" name="year" min="1" max="2020" pattern="[0-9]*" required>
+            </label>
+        <p><input value='Отправить' name='send' id="send" type='submit'></p>
+    </fieldset>
+</form>
+</body>
+</html>
