@@ -13,7 +13,11 @@
 
 # Скриншоты работы приложения
 ![1](/img_for_readme/1.png)
+
 ![2](/img_for_readme/2.png)
+
 ![3](/img_for_readme/3.png)
+
 ![4](/img_for_readme/4.png)
+
 ![5](/img_for_readme/5.png)
