@@ -2,7 +2,7 @@ from flask import Blueprint, session, redirect, request, render_template
 from dbcm import UseDatabase
 import json
 from checker import check_role
-from mysql.connector.errors import ProgrammingError, InterfaceError, DatabaseError
+from pymysql.err import ProgrammingError, InterfaceError, OperationalError
 
 auth_blueprint = Blueprint('auth_blueprint', __name__, template_folder='templates')
 
@@ -12,9 +12,9 @@ def check_user(login, password):
         config = json.load(f)
     with UseDatabase(config) as cursor:
         _SQL = """
-            select `group_login`, `group_pass` 
-            from recruiting.check_users 
-            where user_login=%s and user_pass=%s
+            SELECT `group_login`, `idcheck_users` 
+            FROM recruiting.check_users 
+            WHERE user_login=%s AND user_pass=%s
         """
 
         cursor.execute(_SQL, (login, password))
@@ -43,7 +43,7 @@ def auth():
 
             return redirect('/')
 
-        except DatabaseError:
+        except OperationalError:
             return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")

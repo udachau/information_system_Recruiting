@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Доступ запрещен</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
 </head>
-<body>
-<p class="error">Доступ к варианту использования для пользователя {{ user }} запрещен!!!</p>
-<a class="middle exit" href="/">Вернуться в главное меню</a>
+<body class="denied-page">
+    <main class="denied-message">
+        <p class="error">Доступ к варианту использования для пользователя <strong>{{ user }}</strong> запрещен!!!</p>
+        <a class="back-link" href="/">Вернуться в главное меню</a>
+    </main>
 </body>
 </html>

@@ -1,6 +1,6 @@
 from flask import request, Blueprint, render_template, session, redirect, url_for
 from dbcm import UseDatabase
-from mysql.connector.errors import InterfaceError, ProgrammingError, DatabaseError
+from pymysql.err import ProgrammingError, InterfaceError, OperationalError
 import json
 from checker import check_role
 
@@ -38,7 +38,7 @@ def request1():
                 result = make_request(cursor, _SQL, values, keys)
                 return render_template('request1_result.html', report=result, year=year)
 
-        except DatabaseError:
+        except OperationalError:
             return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")
@@ -75,7 +75,7 @@ def request2():
                 result = make_request(cursor, _SQL, values, keys)
                 return render_template('request2_result.html', report=result, text=text)
 
-        except DatabaseError:
+        except OperationalError:
             return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")
@@ -112,7 +112,7 @@ def request3():
                 result = make_request(cursor, _SQL, values, keys)
                 return render_template('request3_result.html', report=result, year=year)
 
-        except DatabaseError:
+        except OperationalError:
             return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")

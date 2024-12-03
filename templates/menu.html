@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
 </head>
-<body class="">
-<p>Пользователь {{ user }}, пароль {{ password }}</p>
-
-<nav class="menu">
-    {% for point in menu %}
-        <a class="middle" href="{{ point['url'] }}">{{ point['name'] }}</a>
-    {% endfor %}
-</nav>
-
+<body class="menu-page">
+    <header class="menu-header">
+        <p class="menu-user">Ваша роль в системе <strong>{{ user }}</strong>, id сотрудника <strong>{{ password }}</strong></p>
+    </header>
+    <nav class="menu">
+        {% for point in menu %}
+            <a class="menu-link" href="{{ point['url'] }}">{{ point['name'] }}</a>
+        {% endfor %}
+    </nav>
 </body>
 </html>

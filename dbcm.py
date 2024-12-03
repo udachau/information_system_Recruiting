@@ -1,13 +1,12 @@
-import mysql.connector
+import pymysql
 
 
-class UseDatabase:                          # класс контекстного менеджера
-
+class UseDatabase:
     def __init__(self, config: dict):
         self.configuration = config
 
-    def __enter__(self):                    # результат будет записан в часть as
-        self.conn = mysql.connector.connect(**self.configuration)
+    def __enter__(self):
+        self.conn = pymysql.connect(**self.configuration)
         self.cursor = self.conn.cursor()
         return self.cursor
 
