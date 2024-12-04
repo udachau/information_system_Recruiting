@@ -1,6 +1,5 @@
 from flask import request, Blueprint, render_template, session, redirect, url_for
 from dbcm import UseDatabase
-from mysql.connector.errors import InterfaceError, ProgrammingError, DatabaseError
 from checker import check_role
 
 report_bp = Blueprint('report_bp', __name__, template_folder='templates')
@@ -17,8 +16,8 @@ def proccheck(cursor, l_year):
 
 def get_report(cursor, l_year):
     _SQL = """
-        SELECT id_rep, id_structure, name_vac, num_open, avg_num_days
-        FROM `recruiting`.`report`
+        SELECT id_rep, position_id, job_name, openings_count, avg_close_days
+        FROM report
         WHERE `year`=%s"""
 
     keys = ['id_rep', 'id_structure', 'name_vac', 'num_open', 'avg_num_days']

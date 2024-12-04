@@ -3,35 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Подтверждение данных</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/oform.css">
 </head>
 <body>
-<h1>Параметры собеседования:</h1>
-<table>
-    <tr>
-        <td>Себеседование проводит</td>
-        <td>{{ recruiter }}</td>
-    </tr>
-    <tr>
-        <td>На вакансию</td>
-        <td>{{ vacancy }}</td>
-    </tr>
-    <tr>
-        <td>Опрашиваемый</td>
-        <td>{{ candidate }}</td>
-    </tr>
-    <tr>
-        <td>Дата проведения:</td>
-        <td>{{ date }}</td>
-    </tr>
-</table>
-
-<td class="redact">
-    <button onclick="window.location.href = '?return=recruiter';">Редактировать</button>
-</td>
-
-<form method="post" action="/save">
-    <input type="submit" name="save" value="Сохранить протокол">
-</form>
+    <div class="form-container">
+        <h1>Подтверждение данных</h1>
+        <table>
+            <tr>
+                <td>Сотрудник:</td>
+                <td>{{ employee }}</td>
+            </tr>
+            <tr>
+                <td>Вакансия:</td>
+                <td>{{ opening }}</td>
+            </tr>
+            <tr>
+                <td>Кандидат:</td>
+                <td>{{ candidate }}</td>
+            </tr>
+            <tr>
+                <td>Дата:</td>
+                <td>{{ date }}</td>
+            </tr>
+        </table>
+        <form method="post" action="/save">
+            <input type="hidden" name="save" value="1">
+            <input type="submit" value="Сохранить">
+        </form>
+        <button class="return" onclick="window.location.href='/';">Назад в главное меню</button>
+    </div>
 </body>
 </html>

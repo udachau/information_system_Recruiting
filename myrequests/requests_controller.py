@@ -1,64 +1,72 @@
 from flask import request, Blueprint, render_template, session, redirect, url_for
 from dbcm import UseDatabase
 from pymysql.err import ProgrammingError, InterfaceError, OperationalError
-import json
 from checker import check_role
 
 requests_bp = Blueprint('requests_bp', __name__, template_folder='templates')
 
-
 def make_request(cursor, sql, values, keys):
+    """Универсальная функция для выполнения запросов."""
     cursor.execute(sql, values)
     result = cursor.fetchall()
-
-    result = [dict(zip(keys, line)) for line in result]
-    return result
+    return [dict(zip(keys, line)) for line in result]
 
 
 @requests_bp.route('/request1', methods=['GET', 'POST'])
 @check_role
 def request1():
-    _SQL = """SELECT id_struct, unit_vac, COUNT(*) as count
-    FROM `recruiting`.`vacancy`
-    WHERE YEAR(date_open) = %s
-    GROUP BY id_struct;
+    """Обработчик запроса 1."""
+    _SQL = """
+        SELECT COUNT(*) as employee_count, division_code
+        FROM positions
+        JOIN employees ON positions.position_id = employees.employee_id
+        WHERE YEAR(employees.enrollment_date) = %s
+        GROUP BY division_code;
     """
 
+    # Если пользователь нажал "вернуться"
     if request.args.get('return'):
         return redirect(url_for('requests_menu'))
 
+    # Получить введённый год
     year = request.form.get('year')
 
-    if year:
-        try:
-            with UseDatabase(session['db_config']) as cursor:
-                keys = ['id_struct', 'unit_vac', 'count']
-                values = (year,)
+    if not year:
+        return render_template('params_form_enter_year.html', request=1)
 
-                result = make_request(cursor, _SQL, values, keys)
-                return render_template('request1_result.html', report=result, year=year)
+    if not year.isdigit() or int(year) < 1:
+        return render_template('error.html', error_msg="Введите корректный год!")
 
-        except OperationalError:
-            return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
-        except InterfaceError:
-            return render_template('error.html', error_msg="Ошибка.")
-        except ProgrammingError:
-            return render_template('error.html', error_msg="Не удалось выполнить запрос!")
+    try:
+        with UseDatabase(session['db_config']) as cursor:
+            keys = ['employee_count', 'division_code']
+            values = (year,)
 
-    return render_template('params_form_enter_year.html', request=1)
+            result = make_request(cursor, _SQL, values, keys)
 
+            if not result:
+                return render_template('no_data.html', message="Данные за указанный год не найдены.")
+
+            return render_template('request1_result.html', report=result, year=year)
+
+    except OperationalError:
+        return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
+    except InterfaceError:
+        return render_template('error.html', error_msg="Ошибка подключения.")
+    except ProgrammingError as e:
+        return render_template('error.html', error_msg=f"Ошибка выполнения запроса: {e}")
 
 @requests_bp.route('/request2', methods=['GET', 'POST'])
 @check_role
 def request2():
     _SQL = """
-        SELECT `co-worker`.*
-        FROM `recruiting`.`co-worker`
-        JOIN staffing_table ON `co-worker`.id_struct = staffing_table.id_struct
-        WHERE unit=%s AND date_dis IS NULL
-        ORDER BY birth DESC
+        SELECT e.*
+        FROM employees e
+        JOIN positions p ON e.position_id = p.position_id
+        WHERE p.job_name = %s AND e.dismissal_date IS NULL
+        ORDER BY e.birth_date DESC
         LIMIT 1;
-        """
+    """
 
     if request.args.get('return'):
         return redirect(url_for('requests_menu'))
@@ -68,8 +76,7 @@ def request2():
     if text:
         try:
             with UseDatabase(session['db_config']) as cursor:
-                keys = ['id_work', 'FName_worker', 'birth', 'address_w', 'educat',
-                        'salary', 'date_res', 'date_dis', 'id_struct']
+                keys = ['employee_id', 'name', 'birth_date', 'address', 'education', 'position_id', 'salary', 'enrollment_date', 'dismissal_date']
                 values = (text,)
 
                 result = make_request(cursor, _SQL, values, keys)
@@ -80,7 +87,7 @@ def request2():
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")
         except ProgrammingError:
-            return render_template('error.html', error_msg="Не удалось записать протокол!")
+            return render_template('error.html', error_msg="Не удалось выполнить запрос!")
 
     return render_template('params_form_enter_depart_name.html', request=2)
 
@@ -89,14 +96,11 @@ def request2():
 @check_role
 def request3():
     _SQL = """
-        SELECT staffing_table.*
-        FROM `recruiting`.`staffing_table`
-        LEFT JOIN (SELECT *
-            FROM `recruiting`.`vacancy`
-            WHERE YEAR(vacancy.date_open) = %s) AS year_vacancy
-        ON staffing_table.id_struct = year_vacancy.id_struct
-        WHERE year_vacancy.id_struct IS NULL;
-        """
+        SELECT p.position_id, p.job_name, CONCAT(p.min_salary, '-', p.max_salary) AS minmax_salary
+        FROM positions p
+        LEFT JOIN openings o ON p.position_id = o.position_id AND YEAR(o.open_date) = %s
+        WHERE o.opening_id IS NULL;
+    """
 
     if request.args.get('return'):
         return redirect(url_for('requests_menu'))
@@ -106,7 +110,7 @@ def request3():
     if year:
         try:
             with UseDatabase(session['db_config']) as cursor:
-                keys = ['id_struct', 'unit', 'minmax_salary']
+                keys = ['position_id', 'job_name', 'minmax_salary']
                 values = (year,)
 
                 result = make_request(cursor, _SQL, values, keys)
@@ -117,6 +121,6 @@ def request3():
         except InterfaceError:
             return render_template('error.html', error_msg="Ошибка.")
         except ProgrammingError:
-            return render_template('error.html', error_msg="Не удалось записать протокол!")
+            return render_template('error.html', error_msg="Не удалось выполнить запрос!")
 
     return render_template('params_form_enter_year.html', request=3)

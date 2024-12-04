@@ -12,8 +12,8 @@ def check_user(login, password):
         config = json.load(f)
     with UseDatabase(config) as cursor:
         _SQL = """
-            SELECT `group_login`, `idcheck_users` 
-            FROM recruiting.check_users 
+            SELECT `group_login`, `group_pass` 
+            FROM rec.check_users 
             WHERE user_login=%s AND user_pass=%s
         """
 

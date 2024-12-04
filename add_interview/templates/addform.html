@@ -2,23 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Создание собеседования в расписании</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+    <title>Создание собеседования</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/oform.css">
 </head>
 <body>
-{% if part == 'recruiter' %}
-    {% block recruiter %}
-    {% endblock %}
-{% elif part == 'vacancy' %}
-    {% block vacancy %}
-    {% endblock %}
-{% elif part == 'candidate' %}
-    {% block candidate %}
-    {% endblock %}
-{% elif part == 'date' %}
-    {% block date %}
-    {% endblock %}
-{% endif %}
-<button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>
+    <div class="form-container">
+        <h1>Создание собеседования</h1>
+        <div class="dynamic-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>
+    </div>
 </body>
 </html>

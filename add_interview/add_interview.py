@@ -1,76 +1,69 @@
 from flask import request, Blueprint, render_template, session, redirect, url_for
 from dbcm import UseDatabase
-import json
 from mysql.connector.errors import DatabaseError, InterfaceError, ProgrammingError
 from checker import check_role
 
 interview_bp = Blueprint('interview_bp', __name__, template_folder='templates')
 
 
-def get_recruiter(cursor):
-    _SQL = '''SELECT id_worker, FName_worker
-        FROM `recruiting`.`co-worker`
-        WHERE id_struct = 12;
-        '''
-
+def get_employees(cursor):
+    _SQL = '''SELECT employee_id, name FROM employees WHERE dismissal_date IS NULL;'''
     cursor.execute(_SQL)
     result = cursor.fetchall()
-
     keys = ['id', 'name']
     result = [dict(zip(keys, line)) for line in result]
-
+    print('---EMPLOYEES:', result)  # Лог для отладки
     return result
 
 
-def get_vacancy(cursor):
-    _SQL = '''SELECT id_vac, unit_vac
-        FROM vacancy
-        WHERE date_close = 00-00-0000;
-        '''
-
+def get_openings(cursor):
+    _SQL = '''SELECT opening_id, position_id FROM openings WHERE close_date IS NULL;'''
     cursor.execute(_SQL)
     result = cursor.fetchall()
-
     keys = ['id', 'name']
     result = [dict(zip(keys, line)) for line in result]
-
+    print('---OPENINGS:', result)  # Лог для отладки
     return result
 
 
-def get_candidate(cursor):
-    _SQL = """
-    SELECT id_cand, FName_cand
-    FROM `recruiting`.`candidate`
-    """
-
+def get_candidates(cursor):
+    _SQL = '''SELECT candidate_id, name FROM candidates;'''
     cursor.execute(_SQL)
     result = cursor.fetchall()
-
     keys = ['id', 'name']
     result = [dict(zip(keys, line)) for line in result]
-
+    print('---CANDIDATES:', result)  # Лог для отладки
     return result
 
 
 def get_id_from_session(_list, find_name):
-    for i in range(len(_list)):
-        if _list[i]['name'] == find_name:
-            return _list[i]['id']
+    try:
+        # Преобразуем find_name в int для поиска
+        find_name = int(find_name)
+        for item in _list:
+            if item['id'] == find_name:
+                return item['id']
+        print(f'ID not found for: {find_name} in {_list}')  # Лог для отладки
+    except ValueError:
+        print(f'ValueError: Cannot convert {find_name} to int')
+    return None
+
+
 
 
 def to_page(cursor, return_to):
-    if return_to == 'recruiter':
-        recruiter_choice = get_recruiter(cursor)
-        return render_template('form_parts.html', part='recruiter',
-                               recruiter=recruiter_choice, selected=session.get('recruiter'))
-    elif return_to == 'vacancy':
-        vacancy_choice = get_vacancy(cursor)
-        return render_template('form_parts.html', part='vacancy',
-                               vacancy=vacancy_choice, selected=session.get('vacancy'))
+    if return_to == 'employee':
+        employee_choice = get_employees(cursor)
+        return render_template('form_parts.html', part='employee',
+                               employees=employee_choice, selected=session.get('employee'))
+    elif return_to == 'opening':
+        opening_choice = get_openings(cursor)
+        return render_template('form_parts.html', part='opening',
+                               openings=opening_choice, selected=session.get('opening'))
     elif return_to == 'candidate':
-        candidate_choice = get_candidate(cursor)
+        candidate_choice = get_candidates(cursor)
         return render_template('form_parts.html', part='candidate',
-                               candidate=candidate_choice, selected=session.get('candidate'))
+                               candidates=candidate_choice, selected=session.get('candidate'))
     else:
         return render_template('form_parts.html', part='date', selected=session.get('date'))
 
@@ -85,106 +78,125 @@ def add_interview():
             if return_to:
                 return to_page(cursor, return_to)
 
-            recruiter = request.form.get('recruiter')
-            vacancy = request.form.get('vacancy')
+            employee = request.form.get('employee')
+            opening = request.form.get('opening')
             candidate = request.form.get('candidate')
             date = request.form.get('date')
 
-            if recruiter:
-                print('---recr')
-                session['recruiter'][1] = recruiter
-                session['recruiter'][0] = get_id_from_session(session['recruiter'][0], recruiter)
+            if employee:
+                print('---EMPLOYEE SELECTED:', employee)
+                session['employee'] = [get_employees(cursor), employee]
 
-                vacancy = get_vacancy(cursor)
-                session['vacancy'] = ['', '']
-                session['vacancy'][0] = vacancy
+                # Печать текущего состояния сессии
+                print(session['employee'])
 
-                print(session['recruiter'])
-                session.update()
-                return render_template('form_parts.html', part='vacancy', vacancy=vacancy)
+                return to_page(cursor, 'opening')
+            elif opening:
+                print('---OPENING SELECTED:', opening)
+                session['opening'] = [get_openings(cursor), opening]
 
-            elif vacancy:
-                print('---vac')
-                session['vacancy'][1] = vacancy
-                session['vacancy'][0] = get_id_from_session(session['vacancy'][0], vacancy)
+                # Печать текущего состояния сессии
+                print(session['employee'])
+                print(session['opening'])
 
-                candidate = get_candidate(cursor)
-                session['candidate'] = ['', '']
-                session['candidate'][0] = candidate
-
-                print(session['recruiter'])
-                print(session['vacancy'])
-                print(session['candidate'])
-                session.update()
-                return render_template('form_parts.html', part='candidate', candidate=candidate)
-
+                return to_page(cursor, 'candidate')
             elif candidate:
-                print('---cand')
-                session['candidate'][1] = candidate
-                session['candidate'][0] = get_id_from_session(session['candidate'][0], candidate)
+                print('---CANDIDATE SELECTED:', candidate)
+                session['candidate'] = [get_candidates(cursor), candidate]
 
-                print(session['recruiter'])
-                print(session['vacancy'])
+                # Печать текущего состояния сессии
+                print(session['employee'])
+                print(session['opening'])
                 print(session['candidate'])
-                session.update()
-                return render_template('form_parts.html', part='date')
 
+                return to_page(cursor, 'date')
             elif date:
-                print('---date')
+                print('---DATE SELECTED:', date)
                 session['date'] = date
 
-                print(session['recruiter'])
-                print(session['vacancy'])
+                # Печать текущего состояния сессии
+                print(session['employee'])
+                print(session['opening'])
                 print(session['candidate'])
                 print(session['date'])
+
                 return render_template('confirm.html',
-                                       recruiter=session['recruiter'][1],
-                                       vacancy=session['vacancy'][1],
+                                       employee=session['employee'][1],
+                                       opening=session['opening'][1],
                                        candidate=session['candidate'][1],
-                                       date=session.get('date'))
-
+                                       date=date)
             else:
-                recruiter = get_recruiter(cursor)
-                session['recruiter'] = ['', '']
-                session['recruiter'][0] = recruiter
-                session.update()
-                return render_template('form_parts.html', part='recruiter', recruiter=recruiter)
+                employee_choice = get_employees(cursor)
+                session['employee'] = ['', '']
+                return render_template('form_parts.html', part='employee', employees=employee_choice)
+
+    except ProgrammingError as e:
+        print('---SQL ERROR:', e)
+        return render_template('error.html', error_msg="Ошибка при выполнении SQL-запроса!")
+    except InterfaceError as e:
+        print('---INTERFACE ERROR:', e)
+        return render_template('error.html', error_msg="Ошибка подключения к базе данных!")
+    except DatabaseError as e:
+        print('---DATABASE ERROR:', e)
+        return render_template('error.html', error_msg="Ошибка базы данных!")
 
 
-    except ProgrammingError:
-        return render_template('error.html', error_msg="Не удалось записать протокол!")
-    except InterfaceError:
-        return render_template('error.html', error_msg="Ошибка.")
-    except DatabaseError:
-        return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
-
-
-
-@interview_bp.route('/save', methods=['GET', 'POST'])
+@interview_bp.route('/save', methods=['POST'])
 @check_role
 def save_interview():
     if not request.form.get('save'):
         return redirect(url_for('interview_bp.add_interview'))
 
+    print('---DEBUG SESSION BEFORE SAVE---')
+    print('Employee:', session.get('employee'))
+    print('Opening:', session.get('opening'))
+    print('Candidate:', session.get('candidate'))
+    print('Date:', session.get('date'))
+
     try:
         with UseDatabase(session['db_config']) as cursor:
-            _SQL = f"""INSERT INTO `recruiting`.`interview`(`date_int`, interview.`id_worker`, interview.`id_cand`, interview.`id_vac`) 
-                   VALUES('{session['date']}', {session['recruiter'][0]}, {session['candidate'][0]}, {session['vacancy'][0]});"""
-            print(_SQL)
-            cursor.execute(_SQL)
+            # Получение ID сотрудника
+            employee_id = get_id_from_session(session['employee'][0], session['employee'][1])
+            if not employee_id:
+                return render_template('error.html', error_msg="Сотрудник не выбран!")
+            
+            # Получение ID вакансии
+            opening_id = get_id_from_session(session['opening'][0], session['opening'][1])
+            if not opening_id:
+                return render_template('error.html', error_msg="Вакансия не выбрана!")
+            
+            # Получение ID кандидата
+            candidate_id = get_id_from_session(session['candidate'][0], session['candidate'][1])
+            if not candidate_id:
+                return render_template('error.html', error_msg="Кандидат не выбран!")
 
+            # SQL-запрос для таблицы interviews
+            _SQL = '''INSERT INTO interviews (date, employee_id, opening_id) 
+                      VALUES (%s, %s, %s);'''
+            cursor.execute(_SQL, (session['date'], employee_id, opening_id))
 
-    except ProgrammingError:
-        return render_template('error.html', error_msg="Не удалось записать протокол!")
-    except InterfaceError:
-        return render_template('error.html', error_msg="Ошибка.")
-    except DatabaseError:
-        return render_template('error.html', error_msg="Не удалось подключиться к базе данных.")
+            # Получение ID собеседования
+            interview_id = cursor.lastrowid
 
+            # SQL-запрос для таблицы interview_details
+            _SQL = '''INSERT INTO interview_details (candidate_id, interview_id, result)
+                      VALUES (%s, %s, %s);'''
+            cursor.execute(_SQL, (candidate_id, interview_id, 0))
 
-    session.pop('recruiter')
-    session.pop('vacancy')
-    session.pop('candidate')
-    session.pop('date')
+            # Явное подтверждение транзакции
+            cursor.connection.commit()
+
+            print('---INTERVIEW SAVED SUCCESSFULLY---')
+            print('Interview ID:', interview_id)
+
+    except (ProgrammingError, InterfaceError, DatabaseError) as e:
+        print('---SAVE ERROR:', e)
+        return render_template('error.html', error_msg="Не удалось сохранить данные!")
+
+    # Очистка сессии
+    session.pop('employee', None)
+    session.pop('opening', None)
+    session.pop('candidate', None)
+    session.pop('date', None)
 
     return render_template('result.html')

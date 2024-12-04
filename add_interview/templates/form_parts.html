@@ -1,71 +1,66 @@
 {% extends "addform.html" %}
 
-{% block recruiter %}
-    <form method="post" action="/add">
-    <fieldset>
-        <legend>Введите данные о собеседовании</legend>
-        <label>
-            <span>Выберите работника, который будет проводить собеседование</span>
-            <select required name="recruiter">
-                {% for line in recruiter %}
-                    <option>
-                        {{ line.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </label>
-        <input type="submit" name="send" value="Выбрать">
-    </fieldset>
-    </form>
-{% endblock %}
+{% block content %}
+<div class="form-container">
 
-{% block vacancy %}
-    <form method="post" action="/add">
-    <fieldset>
-        <legend>Введите данные о собеседовании</legend>
-        <label>
-            <span>Выберите открытую вакансию</span>
-            <select required name="vacancy">
-                {% for line in vacancy %}
-                    <option>
-                        {{ line.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </label>
-        <input type="submit" name="send" value="Выбрать">
-    </fieldset>
+    <!-- Форма выбора сотрудника -->
+    <form method="post" action="/add" class="{% if part != 'employee' %}hidden{% endif %}">
+        <fieldset>
+            <legend>Выберите сотрудника</legend>
+            <label>
+                Сотрудник:
+                <select name="employee" required>
+                    {% for line in employees %}
+                    <option value="{{ line.id }}">{{ line.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <input type="submit" value="Далее">
+        </fieldset>
     </form>
-{% endblock %}
 
-{% block candidate %}
-    <form method="post" action="/add">
-    <fieldset>
-        <legend>Введите данные о собеседовании</legend>
-        <label>
-            <span>Выберите кандидата</span>
-            <select required name="candidate">
-                {% for line in candidate %}
-                    <option>
-                        {{ line.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </label>
-        <input type="submit" name="send" value="Выбрать">
-    </fieldset>
+    <!-- Форма выбора вакансии -->
+    <form method="post" action="/add" class="{% if part != 'opening' %}hidden{% endif %}">
+        <fieldset>
+            <legend>Выберите вакансию</legend>
+            <label>
+                Вакансия:
+                <select name="opening" required>
+                    {% for line in openings %}
+                    <option value="{{ line.id }}">{{ line.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <input type="submit" value="Далее">
+        </fieldset>
     </form>
-{% endblock %}
 
-{% block date %}
-    <form method="post" action="/add">
-    <fieldset>
-        <legend>Введите данные о собеседовании</legend>
-        <label>
-            <span>Выберите дату собеседования</span>
-            <input type="date" name="date" value="{{ selected }}">
-        </label>
-        <input type="submit" name="send" value="Выбрать">
-    </fieldset>
+    <!-- Форма выбора кандидата -->
+    <form method="post" action="/add" class="{% if part != 'candidate' %}hidden{% endif %}">
+        <fieldset>
+            <legend>Выберите кандидата</legend>
+            <label>
+                Кандидат:
+                <select name="candidate" required>
+                    {% for line in candidates %}
+                    <option value="{{ line.id }}">{{ line.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <input type="submit" value="Далее">
+        </fieldset>
     </form>
+
+    <!-- Форма выбора даты -->
+    <form method="post" action="/add" class="{% if part != 'date' %}hidden{% endif %}">
+        <fieldset>
+            <legend>Выберите дату собеседования</legend>
+            <label>
+                Дата:
+                <input type="date" name="date" value="{{ selected }}" required>
+            </label>
+            <input type="submit" value="Подтвердить">
+        </fieldset>
+    </form>
+</div>
 {% endblock %}

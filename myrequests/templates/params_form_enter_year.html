@@ -2,19 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Введите год для запроса</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
 </head>
 <body>
-<form method="post" action="/request{{ request }}">
-    <fieldset>
-        <legend>Данные для запроса</legend>
-            <label>
+    <h1>Введите год для выполнения запроса</h1>
+    <form method="post" action="/request{{ request }}">
+        <fieldset>
+            <legend>Данные для запроса</legend>
+            <label for="year">
                 Введите год:
-                <input type="number" name="year" min="1" max="2020" pattern="[0-9]*" required>
+                <input type="number" name="year" id="year" min="1" required>
             </label>
-        <p><input value='Отправить' name='send' id="send" type='submit'></p>
-    </fieldset>
-</form>
+            <p>
+                <input value="Отправить" name="send" id="send" type="submit">
+            </p>
+        </fieldset>
+    </form>
+
+    <div class="button-group">
+        <button class="return" onclick="window.location.href = '/requests';">Назад в меню запросов</button>
+        <button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>
+    </div>
 </body>
 </html>
