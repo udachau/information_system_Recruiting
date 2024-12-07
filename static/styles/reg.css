@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+/* Сообщение об успехе */
+.success-message {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4caf50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Основной стиль страницы */
+.register-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #e9f7ef, #d4f5d4);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Контейнер формы регистрации */
+.register-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin: 0 auto;
+    margin-top: 5vh;
+}
+
+/* Ошибки */
+.error-message {
+    color: #ff4d4f;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Форма регистрации */
+.register-form fieldset {
+    border: none;
+    padding: 0;
+}
+
+.register-form legend {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4caf50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.register-form label {
+    font-size: 14px;
+    color: #4caf50;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.register-form input[type="text"],
+.register-form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.register-form input[type="text"]:focus,
+.register-form input[type="password"]:focus {
+    border-color: #4caf50;
+}
+
+/* Общие стили кнопок */
+.submit-button,
+.back-button {
+    display: block;
+    width: 100%; /* Одинаковая ширина */
+    padding: 10px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #4caf50; /* Основной зеленый цвет */
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none; /* Убираем подчеркивание для ссылки */
+    box-sizing: border-box; /* Учитываем padding в размере кнопки */
+    transition: background-color 0.3s;
+}
+
+/* Синий цвет для кнопки "Вернуться к авторизации" */
+.back-button {
+    background: #007bff;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+/* Ховер эффект для кнопок */
+.submit-button:hover {
+    background-color: #43a047;
+}

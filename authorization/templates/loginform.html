@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Авторизация</title>
     <link rel="stylesheet" href="/static/styles/style.css">
 </head>
-<body>
+<body class="login-page">
     <div class="login-container">
         {% if wrong %}
             <p class="error-message">Неверный логин или пароль</p>
@@ -23,6 +23,7 @@
                 <input type="submit" value="Войти" class="submit-button">
             </fieldset>
         </form>
+        <a href="/register" class="register-button">Регистрация</a>
     </div>
 </body>
 </html>

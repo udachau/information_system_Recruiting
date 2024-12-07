@@ -68,21 +68,42 @@ body.login-page {
     border-color: #4caf50;
 }
 
-.login-form .submit-button {
-    width: 100%;
+/* Общие стили кнопок */
+.submit-button,
+.register-button {
+    display: block;
+    width: 100%; /* Одинаковая ширина */
     padding: 10px;
     font-size: 16px;
     color: #ffffff;
-    background: #4caf50;
+    text-align: center;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none; /* Убираем подчеркивание у ссылки */
+    box-sizing: border-box; /* Учитываем padding в размере кнопки */
     transition: background-color 0.3s;
 }
 
-.login-form .submit-button:hover {
+/* Зелёная кнопка для "Войти" */
+.submit-button {
+    background: #4caf50;
+}
+
+.submit-button:hover {
     background-color: #43a047;
 }
+
+/* Синяя кнопка для "Регистрация" */
+.register-button {
+    background: #007bff;
+}
+
+.register-button:hover {
+    background-color: #0056b3;
+}
+
 /* Общие стили */
 body {
     margin: 0;
@@ -182,4 +203,54 @@ body {
 
 .back-link:hover {
     background: #43a047;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.register-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #4caf50;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.register-button:hover {
+    background-color: #43a047;
+}
+
+/* Кнопки одинакового размера */
+.submit-button,
+.register-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #4caf50;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    text-decoration: none; /* Убираем подчеркивание для ссылки */
+}
+
+/* Ховер эффект для кнопок */
+.submit-button:hover,
+.register-button:hover {
+    background-color: #43a047;
 }

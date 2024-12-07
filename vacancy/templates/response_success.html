@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Успешный отклик</title>
+    <link rel="stylesheet" href="/static/styles/vacancy.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title">Успешный отклик</h1>
+    </header>
+    <main class="main-content">
+        <section class="success-message">
+            <p>Ваш отклик на вакансию был успешно отправлен!</p>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="{{ url_for('vacancy_bp.vacancies') }}" class="btn btn-vacancies">Вернуться к списку вакансий</a>
+            <a href="{{ url_for('cabinet_bp.cabinet') }}" class="btn btn-cabinet">Перейти в личный кабинет</a>
+            <a href="{{ url_for('menu') }}" class="btn btn-back">Вернуться в главное меню</a>
+        </div>
+    </main>
+</body>
+</html>

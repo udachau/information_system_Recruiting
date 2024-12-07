@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/styles/reg.css">
+</head>
+<body class="register-page">
+    <div class="register-container">
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+        <form method="post" action="/register" class="register-form">
+            <fieldset>
+                <legend>Регистрация</legend>
+                <label for="login">Логин:</label>
+                <input type="text" id="login" name="login" required placeholder="Введите логин">
+                
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required placeholder="Введите пароль">
+                
+                <input type="submit" value="Зарегистрироваться" class="submit-button">
+            </fieldset>
+        </form>
+        <a href="/auth" class="back-button">Вернуться к авторизации</a>
+    </div>
+</body>
+</html>

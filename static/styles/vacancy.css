@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f8ff;
+    color: #333;
+}
+
+.header {
+    background-color: #1abc9c;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 2em;
+}
+
+.main-content {
+    max-width: 900px;
+    margin: 2em auto;
+    padding: 1em;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.vacancy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+.vacancy-table th, .vacancy-table td {
+    border: 1px solid #ddd;
+    padding: 0.8em;
+    text-align: left;
+}
+
+.vacancy-table th {
+    background-color: #ecf0f1;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: white;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.btn-respond {
+    background-color: #2ecc71;
+}
+
+.btn-cabinet {
+    background-color: #3498db;
+}
+
+.btn-back {
+    background-color: #34495e;
+}
+
+.btn-vacancies {
+    background-color: #2216ca;
+    margin-right: 1em;
+}
+
+/* Сообщение об успешном отклике */
+.success-message {
+    text-align: center;
+    margin: 2em 0;
+    font-size: 1.2em;
+    color: #2c3e50;
+    background-color: #ecf0f1;
+    padding: 1em;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Кнопки навигации */
+.navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 2em;
+}
+
+.btn-vacancies, .btn-cabinet, .btn-back {
+    background-color: #3498db; /* Голубой фон */
+    color: white; /* Белый текст */
+    text-decoration: none; /* Убираем подчеркивание */
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-vacancies:hover, .btn-cabinet:hover, .btn-back:hover {
+    background-color: #2980b9; /* Темнее при наведении */
+}

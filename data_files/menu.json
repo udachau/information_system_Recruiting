@@ -2,5 +2,7 @@
   {"name": "Меню запросов", "url": "?req=requests"},
   {"name": "Создание собеседования в расписании", "url": "?req=make"},
   {"name": "Работа с отчетом", "url": "?req=reports"},
+  {"name": "Вакансии", "url": "?req=vacancies"},
+  {"name": "Личный кабинет", "url": "?req=cabinet"},
   {"name": "Выйти из системы", "url": "?req=exit"}
 ]

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/static/styles/lich_cap.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title">Личный кабинет</h1>
+    </header>
+    <main class="main-content">
+        <section class="user-info">
+            <h2>Ваша информация</h2>
+            <p><strong>Логин:</strong> {{ user_login }}</p>
+            <p><strong>Имя:</strong> {{ user_info.name }}</p>
+            <p><strong>Адрес:</strong> {{ user_info.address }}</p>
+            <p><strong>Возраст:</strong> {{ user_info.age }}</p>
+            <p><strong>Пол:</strong> {{ user_info.sex }}</p>
+            <a href="{{ url_for('cabinet_bp.edit_info') }}" class="btn btn-edit">Редактировать информацию</a>
+        </section>
+
+        <section class="user-responses">
+            <h2>Ваши отклики</h2>
+            <table class="responses-table">
+                <thead>
+                    <tr>
+                        <th>Название вакансии</th>
+                        <th>Статус</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for response in user_responses %}
+                    <tr>
+                        <td>{{ response.job_name }}</td>
+                        <td>{{ response.status }}</td>
+                        <td>
+                            {% if response.status == 'откликнулся' %}
+                            <form action="{{ url_for('cabinet_bp.cancel_response', opening_id=response.opening_id) }}" method="POST">
+                                <button type="submit" class="btn btn-cancel">Отменить отклик</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="{{ url_for('vacancy_bp.vacancies') }}" class="btn btn-vacancies">Открытые вакансии</a>
+            <a href="{{ url_for('menu') }}" class="btn btn-back">Вернуться в главное меню</a>
+        </div>
+    </main>
+</body>
+</html>

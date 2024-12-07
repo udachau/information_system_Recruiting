@@ -1,6 +1,12 @@
 [
+  {"url": "/vacancies", "roles": ["guest"]},
+  {"url": "/vacancies/respond", "roles": ["guest"]},
+  {"url": "/vacancies/success", "roles": ["guest"]},
+  {"url": "/cabinet", "roles": ["guest"]},
+  {"url": "/cabinet/edit", "roles": ["guest"]},
+  {"url": "/cabinet/cancel_response", "roles": ["guest"]},
   {"url": "/auth", "roles": ["guest", "boss", "recruter"]},
-  {"url": "/", "roles": ["boss", "recruter"]},
+  {"url": "/", "roles": ["guest", "boss", "recruter"]},
   {"url": "/requests", "roles": ["boss", "recruter"]},
   {"url": "/request1", "roles": ["boss", "recruter"]},
   {"url": "/request2", "roles": ["boss", "recruter"]},

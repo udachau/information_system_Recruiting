@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование информации</title>
+    <link rel="stylesheet" href="/static/styles/lich_cap.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title">Редактирование информации</h1>
+    </header>
+    <main class="main-content">
+        <form action="{{ url_for('cabinet_bp.edit_info') }}" method="POST" class="edit-form">
+            <div class="form-group">
+                <label for="name">Имя:</label>
+                <input type="text" id="name" name="name" value="{{ user_info.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Адрес:</label>
+                <input type="text" id="address" name="address" value="{{ user_info.address }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Возраст:</label>
+                <input type="number" id="age" name="age" value="{{ user_info.age }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sex">Пол:</label>
+                <select id="sex" name="sex" required>
+                    <option value="M" {% if user_info.sex == 'm' %}selected{% endif %}>Мужской</option>
+                    <option value="F" {% if user_info.sex == 'f' %}selected{% endif %}>Женский</option>
+                </select>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-save">Сохранить</button>
+                <a href="{{ url_for('cabinet_bp.cabinet') }}" class="btn btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

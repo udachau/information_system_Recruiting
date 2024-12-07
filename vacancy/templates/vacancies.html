@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вакансии</title>
+    <link rel="stylesheet" href="/static/styles/vacancy.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="header-title">Открытые вакансии</h1>
+    </header>
+    <main class="main-content">
+        <section class="vacancy-list">
+            <table class="vacancy-table">
+                <thead>
+                    <tr>
+                        <th>Название вакансии</th>
+                        <th>Дата открытия</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vacancy in vacancies %}
+                    <tr>
+                        <td>{{ vacancy.job_name }}</td>
+                        <td>{{ vacancy.open_date }}</td>
+                        <td>
+                            <form action="{{ url_for('vacancy_bp.respond_to_vacancy', opening_id=vacancy.opening_id) }}" method="POST">
+                                <button type="submit" class="btn btn-respond">Откликнуться</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="{{ url_for('cabinet_bp.cabinet') }}" class="btn btn-cabinet">Перейти в личный кабинет</a>
+            <a href="{{ url_for('menu') }}" class="btn btn-back">Вернуться в главное меню</a>
+        </div>
+    </main>
+</body>
+</html>
