@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for
 from dbcm import UseDatabase
-import json
+from sql_provider import SQLProvider
 from checker import check_role
+import json
+
+# Создаём экземпляр SQLProvider
+provider = SQLProvider('personal_cabinet/sql')
 
 cabinet_bp = Blueprint('cabinet_bp', __name__, template_folder='templates')
 
@@ -10,11 +14,7 @@ def get_user_info():
     with open('data_files/config.json') as f:
         config = json.load(f)
 
-    query = """
-        SELECT name, address, age, sex 
-        FROM candidates 
-        WHERE user_login = %s
-    """
+    query = provider.get('get_user_info.sql')
     with UseDatabase(config) as cursor:
         cursor.execute(query, (session['user_info']['user_login'],))
         result = cursor.fetchone()
@@ -27,13 +27,7 @@ def get_user_responses():
     with open('data_files/config.json') as f:
         config = json.load(f)
 
-    query = """
-        SELECT r.opening_id, p.job_name, r.status
-        FROM response r
-        JOIN openings o ON r.opening_id = o.opening_id
-        JOIN positions p ON o.position_id = p.position_id
-        WHERE r.user_login = %s
-    """
+    query = provider.get('get_user_responses.sql')
     with UseDatabase(config) as cursor:
         cursor.execute(query, (session['user_info']['user_login'],))
         results = cursor.fetchall()
@@ -48,9 +42,9 @@ def cabinet():
     user_info = get_user_info()
     user_responses = get_user_responses()
     return render_template(
-        'cabinet.html', 
-        user_info=user_info, 
-        user_login=session['user_info']['user_login'], 
+        'cabinet.html',
+        user_info=user_info,
+        user_login=session['user_info']['user_login'],
         user_responses=user_responses
     )
 
@@ -67,11 +61,7 @@ def edit_info():
         with open('data_files/config.json') as f:
             config = json.load(f)
 
-        query = """
-            UPDATE candidates 
-            SET name = %s, address = %s, age = %s, sex = %s 
-            WHERE user_login = %s
-        """
+        query = provider.get('update_user_info.sql')
         with UseDatabase(config) as cursor:
             cursor.execute(query, (name, address, age, sex, session['user_info']['user_login']))
             cursor.connection.commit()
@@ -81,17 +71,21 @@ def edit_info():
     user_info = get_user_info()
     return render_template('edit_info.html', user_info=user_info)
 
-@cabinet_bp.route('/cabinet/cancel_response/<int:opening_id>', methods=['POST'])
-#@check_role тоже не работает, придумать как пофиксить
-def cancel_response(opening_id):
+# Отмена отклика
+@cabinet_bp.route('/cabinet/cancel_response', methods=['POST'])
+@check_role
+def cancel_response():
+    # Получаем ID вакансии из тела POST-запроса
+    opening_id = request.form.get('opening_id')
+
+    if not opening_id:
+        return redirect(url_for('cabinet_bp.cabinet'))  # Безопасное поведение при отсутствии ID
+
     with open('data_files/config.json') as f:
         config = json.load(f)
 
-    query = """
-        UPDATE response 
-        SET status = 'отменено' 
-        WHERE user_login = %s AND opening_id = %s
-    """
+    # Загружаем SQL-запрос для отмены отклика
+    query = provider.get('cancel_response.sql')
     with UseDatabase(config) as cursor:
         cursor.execute(query, (session['user_info']['user_login'], opening_id))
         cursor.connection.commit()

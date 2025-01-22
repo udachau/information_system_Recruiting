@@ -2,34 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Результаты запроса за {{ year }} год</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+    <title>Текущая ситуация по вакансии</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/request.css">
 </head>
 <body>
-    <h1>Результаты запроса за {{ year }} год</h1>
-    <p>Выбранный год: <strong>{{ year }}</strong></p>
-    
-    {% if report %}
-        <table class="styled-table">
+    <h1>Текущая ситуация по вакансии: {{ table[0]['job_name'] }}</h1>
+
+    {% if table %}
+        <table>
             <thead>
                 <tr>
-                    <th>Код подразделения</th>
-                    <th>Количество сотрудников</th>
+                    <th>ID Позиции</th>
+                    <th>Название Вакансии</th>
+                    <th>Дата Открытия</th>
+                    <th>Дата Закрытия</th>
+                    <th>Количество Откликов</th>
+                    <th>Проведенные Собеседования</th>
+                    <th>Статус</th>
                 </tr>
             </thead>
             <tbody>
-                {% for line in report %}
-                    <tr>
-                        <td>{{ line.division_code }}</td>
-                        <td>{{ line.employee_count }}</td>
-                    </tr>
+                {% for row in table %}
+                <tr>
+                    <td>{{ row['position_id'] }}</td>
+                    <td>{{ row['job_name'] }}</td>
+                    <td>{{ row['open_date'] }}</td>
+                    <td>{{ row['close_date'] or 'Не закрыта' }}</td>
+                    <td>{{ row['candidates_applied'] }}</td>
+                    <td>{{ row['interviews_done'] }}</td>
+                    <td>{{ row['status'] }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p class="no-data">Данные за указанный год отсутствуют.</p>
+        <p class="no-data">Нет данных для указанной вакансии.</p>
     {% endif %}
-    
+
     <div class="button-group">
         <button class="return" onclick="window.location.href = '/requests';">Назад в меню запросов</button>
         <button class="return" onclick="window.location.href = '/';">Назад в главное меню</button>

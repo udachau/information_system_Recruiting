@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Годовой отчет по вакансиям</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+</head>
+<body>
+    <h1>Годовой отчет по вакансиям</h1>
+    <p>Период: {{ start_date }} - {{ end_date }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Код подразделения</th>
+                <th>Название должности</th>
+                <th>Количество открытий вакансии</th>
+                <th>Среднее количество дней на закрытие</th>
+                <th>Интервал дат</th>
+                <th>Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button class="return" onclick="window.location.href = '/report';">Назад</button>
+</body>
+</html>

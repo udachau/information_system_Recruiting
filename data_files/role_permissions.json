@@ -1,0 +1,10 @@
+{
+    "manager": {
+        "can_create": true,
+        "can_view": true
+    },
+    "boss": {
+        "can_create": false,
+        "can_view": true
+    }
+}

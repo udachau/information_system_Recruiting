@@ -1,0 +1,15 @@
+{
+    "annual_report": {
+        "name": "Отчет по вакансиям за период",
+        "create_procedure": "annual_report",
+        "view_query": "SELECT id_rep, position_id, job_name, openings_count, avg_close_days, date_range, created_at FROM report WHERE date_range = %s",
+        "template": "annual_report.html"
+    },
+    
+    "hiring": {
+        "name": "Результаты динамики найма за период",
+        "create_procedure": "generate_hiring_dynamics_report",
+        "view_query": "SELECT id, department_name, new_employees_count, active_vacancies_count, avg_hires_per_month, time_interval_months, created_at FROM hiring_dynamics_report WHERE time_interval_months = %s",
+        "template": "hiring_report.html"
+    }
+}

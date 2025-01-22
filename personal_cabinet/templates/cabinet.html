@@ -38,7 +38,8 @@
                         <td>{{ response.status }}</td>
                         <td>
                             {% if response.status == 'откликнулся' %}
-                            <form action="{{ url_for('cabinet_bp.cancel_response', opening_id=response.opening_id) }}" method="POST">
+                            <form action="{{ url_for('cabinet_bp.cancel_response') }}" method="POST">
+                                <input type="hidden" name="opening_id" value="{{ response.opening_id }}">
                                 <button type="submit" class="btn btn-cancel">Отменить отклик</button>
                             </form>
                             {% endif %}

@@ -11,7 +11,7 @@ from report.report import report_bp
 
 app = Flask(__name__)
 
-# Регистрируем blueprint'ы
+# Регистрация blueprints
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(vacancy_bp)
 app.register_blueprint(cabinet_bp)
@@ -20,16 +20,16 @@ app.register_blueprint(interview_bp)
 app.register_blueprint(requests_bp)
 app.register_blueprint(report_bp)
 
+# Загрузка секретного ключа
 with open('data_files/secret_key.json') as f:
     app.secret_key = json.load(f)['secret_key']
+
 # Фильтрация меню по ролям
 def filter_menu_by_role(menu, user_role):
     with open('data_files/roles.json', encoding='utf-8') as f:
         role_mapping = json.load(f)
 
-    # Составляем список доступных URL для текущей роли
     accessible_urls = [item['url'] for item in role_mapping if user_role in item['roles']]
-    print("Accessible URLs for role:", user_role, accessible_urls)  # Отладка
 
     # Карта преобразования параметров req в маршруты
     route_mapping = {
@@ -38,21 +38,18 @@ def filter_menu_by_role(menu, user_role):
         'reports': '/report',
         'vacancies': '/vacancies',
         'cabinet': '/cabinet',
-        'exit': '/'  # Для выхода
+        'exit': '/'
     }
 
     # Проверяем доступность пунктов меню
     def is_accessible(menu_item):
-        # Преобразуем req в маршрут
         menu_url = route_mapping.get(menu_item['url'].replace('?req=', ''), None)
         return menu_url in accessible_urls
 
     filtered_menu = [item for item in menu if is_accessible(item)]
-    print("Menu before filtering:", menu)  # Отладка
-    print("Filtered menu:", filtered_menu)  # Отладка
     return filtered_menu
 
-
+# Маршрут для запросов
 @app.route('/requests', methods=["GET", "POST"])
 @check_role
 def requests_menu():
@@ -64,13 +61,13 @@ def requests_menu():
     route_mapping = {
         '1': url_for('requests_bp.request1'),
         '2': url_for('requests_bp.request2'),
-        '3': url_for('requests_bp.request3'),
+        #'3': url_for('requests_bp.request3'),
         'exit': url_for('menu')
     }
 
     if req is None:
         return render_template('requests_ menu.html', menu=r_menu,
-                               user=session['db_config']['user'], password=session['db_config']['password'])
+                               user=session['db_config']['user'])
     else:
         return redirect(route_mapping.get(req, url_for('menu')))
 
@@ -82,8 +79,7 @@ def menu():
         main_menu = json.load(f)
 
     # Получаем роль пользователя из session['db_config']['user']
-    user_role = session.get('db_config', {}).get('user', 'guest')  # Используем 'user' как роль
-    print("Detected user role:", user_role)  # Отладка роли
+    user_role = session.get('db_config', {}).get('user', 'guest')  # Используем 'guest' как роль по умолчанию
 
     # Фильтруем меню по роли пользователя
     filtered_menu = filter_menu_by_role(main_menu, user_role)
@@ -93,21 +89,20 @@ def menu():
     route_mapping = {
         'requests': url_for('requests_menu'),
         'make': url_for('interview_bp.add_interview'),
-        'reports': url_for('report_bp.proc'),
+        'reports': url_for('report_bp.list_reports'),
         'vacancies': url_for('vacancy_bp.vacancies'),
         'cabinet': url_for('cabinet_bp.cabinet'),
         'exit': 'exit.html'
     }
 
     if req is None:
-        print("Filtered menu items:", filtered_menu)  # Отладка меню
         return render_template('menu.html', menu=filtered_menu,
                                user=session['db_config']['user'], password=session['db_config']['password'])
     if req != 'exit':
         return redirect(route_mapping[req])
     else:
-        #session.pop('user_info')
-        session.pop('db_config')
+        session.pop('user_info', None)
+        session.pop('db_config', None)
         return render_template(route_mapping[req])
 
 if __name__ == '__main__':

@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles/oform.css">
+    <title>Введите код отдела</title>
 </head>
 <body>
-<form method="post" action="/request{{ request }}">
-    <fieldset>
-        <legend>Данные для запроса</legend>
-            <label>
-                Введите название отдела:
-                <input type="text" name="text" required>
-            </label>
-        <p><input value='Отправить' name='send' id="send" type='submit'></p>
-    </fieldset>
-</form>
+    <div class="form-container">
+        <h1>Введите название отдела</h1>
+        <form action="{{ action_url }}" method="POST">
+            <label for="department_name">{{ param_name }}</label>
+            <input type="text" id="department_name" name="department_name" required>
+            <input type="submit" value="Отправить">
+        </form>
+        <div class="navigation-buttons">
+            <a href="/requests" class="btn">Вернуться в меню запросов</a>
+            <a href="/menu" class="btn">Вернуться в главное меню</a>
+        </div>
+    </div>
 </body>
 </html>

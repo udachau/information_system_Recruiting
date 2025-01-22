@@ -2,201 +2,125 @@ from flask import request, Blueprint, render_template, session, redirect, url_fo
 from dbcm import UseDatabase
 from mysql.connector.errors import DatabaseError, InterfaceError, ProgrammingError
 from checker import check_role
+from sql_provider import SQLProvider
+from datetime import date
 
+# Инициализация Blueprint и SQLProvider
 interview_bp = Blueprint('interview_bp', __name__, template_folder='templates')
-
-
-def get_employees(cursor):
-    _SQL = '''SELECT employee_id, name FROM employees WHERE dismissal_date IS NULL;'''
-    cursor.execute(_SQL)
-    result = cursor.fetchall()
-    keys = ['id', 'name']
-    result = [dict(zip(keys, line)) for line in result]
-    print('---EMPLOYEES:', result)  # Лог для отладки
-    return result
-
-
-def get_openings(cursor):
-    _SQL = '''SELECT opening_id, position_id FROM openings WHERE close_date IS NULL;'''
-    cursor.execute(_SQL)
-    result = cursor.fetchall()
-    keys = ['id', 'name']
-    result = [dict(zip(keys, line)) for line in result]
-    print('---OPENINGS:', result)  # Лог для отладки
-    return result
-
+provider = SQLProvider('add_interview/sql')
 
 def get_candidates(cursor):
-    _SQL = '''SELECT candidate_id, name FROM candidates;'''
-    cursor.execute(_SQL)
+    query = provider.get('get_candidates.sql')
+    cursor.execute(query)
     result = cursor.fetchall()
     keys = ['id', 'name']
-    result = [dict(zip(keys, line)) for line in result]
-    print('---CANDIDATES:', result)  # Лог для отладки
-    return result
+    return [dict(zip(keys, line)) for line in result]
 
+def get_openings(cursor, candidate_id):
+    query = provider.get('get_openings.sql')
+    cursor.execute(query, (candidate_id,))
+    result = cursor.fetchall()
+    keys = ['id', 'name']
+    return [dict(zip(keys, line)) for line in result]
 
-def get_id_from_session(_list, find_name):
-    try:
-        # Преобразуем find_name в int для поиска
-        find_name = int(find_name)
-        for item in _list:
-            if item['id'] == find_name:
-                return item['id']
-        print(f'ID not found for: {find_name} in {_list}')  # Лог для отладки
-    except ValueError:
-        print(f'ValueError: Cannot convert {find_name} to int')
-    return None
+def get_employees(cursor):
+    query = provider.get('get_employees.sql')
+    cursor.execute(query)
+    result = cursor.fetchall()
+    keys = ['id', 'name']
+    return [dict(zip(keys, line)) for line in result]
 
+def update_response_status(cursor, opening_id, candidate_id, status):
+    query = provider.get('update_response_status.sql')
+    cursor.execute(query, (status, opening_id, candidate_id))
 
-
-
-def to_page(cursor, return_to):
-    if return_to == 'employee':
-        employee_choice = get_employees(cursor)
-        return render_template('form_parts.html', part='employee',
-                               employees=employee_choice, selected=session.get('employee'))
-    elif return_to == 'opening':
-        opening_choice = get_openings(cursor)
-        return render_template('form_parts.html', part='opening',
-                               openings=opening_choice, selected=session.get('opening'))
-    elif return_to == 'candidate':
-        candidate_choice = get_candidates(cursor)
-        return render_template('form_parts.html', part='candidate',
-                               candidates=candidate_choice, selected=session.get('candidate'))
-    else:
-        return render_template('form_parts.html', part='date', selected=session.get('date'))
-
+def get_selected_name(selected_item):
+    """Получение имени или названия выбранного элемента."""
+    for item in selected_item[0]:  # selected_item[0] — список объектов
+        if str(item['id']) == str(selected_item[1]):  # Сравнение ID
+            return item['name']
+    return "Неизвестно"
 
 @interview_bp.route('/add', methods=['GET', 'POST'])
 @check_role
 def add_interview():
+    today = date.today().isoformat()
     try:
         with UseDatabase(session['db_config']) as cursor:
-            return_to = request.args.get('return')
-
-            if return_to:
-                return to_page(cursor, return_to)
-
-            employee = request.form.get('employee')
-            opening = request.form.get('opening')
             candidate = request.form.get('candidate')
-            date = request.form.get('date')
-
-            if employee:
-                print('---EMPLOYEE SELECTED:', employee)
-                session['employee'] = [get_employees(cursor), employee]
-
-                # Печать текущего состояния сессии
-                print(session['employee'])
-
-                return to_page(cursor, 'opening')
-            elif opening:
-                print('---OPENING SELECTED:', opening)
-                session['opening'] = [get_openings(cursor), opening]
-
-                # Печать текущего состояния сессии
-                print(session['employee'])
-                print(session['opening'])
-
-                return to_page(cursor, 'candidate')
-            elif candidate:
-                print('---CANDIDATE SELECTED:', candidate)
+            opening = request.form.get('opening')
+            employee = request.form.get('employee')
+            input_date = request.form.get('date')
+            if input_date and input_date < today:
+                return render_template('error.html', error_msg="Дата не может быть в прошлом.")
+            if candidate:
                 session['candidate'] = [get_candidates(cursor), candidate]
-
-                # Печать текущего состояния сессии
-                print(session['employee'])
-                print(session['opening'])
-                print(session['candidate'])
-
-                return to_page(cursor, 'date')
-            elif date:
-                print('---DATE SELECTED:', date)
-                session['date'] = date
-
-                # Печать текущего состояния сессии
-                print(session['employee'])
-                print(session['opening'])
-                print(session['candidate'])
-                print(session['date'])
-
+                openings_for_candidate = get_openings(cursor, candidate)
+                if not openings_for_candidate:
+                    return render_template('error.html', error_msg="У выбранного кандидата нет доступных вакансий.")
+                return render_template('form_parts.html', part='opening', openings=openings_for_candidate, today=today)
+            if opening:
+                session['opening'] = [get_openings(cursor, session['candidate'][1]), opening]
+                employees = get_employees(cursor)
+                return render_template('form_parts.html', part='employee', employees=employees, today=today)
+            if employee:
+                session['employee'] = [get_employees(cursor), employee]
+                return render_template('form_parts.html', part='date', selected=session.get('date'), today=today)
+            if input_date:
+                session['date'] = input_date
                 return render_template('confirm.html',
-                                       employee=session['employee'][1],
-                                       opening=session['opening'][1],
-                                       candidate=session['candidate'][1],
-                                       date=date)
-            else:
-                employee_choice = get_employees(cursor)
-                session['employee'] = ['', '']
-                return render_template('form_parts.html', part='employee', employees=employee_choice)
-
-    except ProgrammingError as e:
-        print('---SQL ERROR:', e)
-        return render_template('error.html', error_msg="Ошибка при выполнении SQL-запроса!")
-    except InterfaceError as e:
-        print('---INTERFACE ERROR:', e)
-        return render_template('error.html', error_msg="Ошибка подключения к базе данных!")
-    except DatabaseError as e:
-        print('---DATABASE ERROR:', e)
-        return render_template('error.html', error_msg="Ошибка базы данных!")
-
+                                       employee=get_selected_name(session['employee']),
+                                       opening=get_selected_name(session['opening']),
+                                       candidate=get_selected_name(session['candidate']),
+                                       date=input_date)
+            candidates_choice = get_candidates(cursor)
+            if not candidates_choice:
+                return render_template('error.html', error_msg="Нет доступных соискателей с откликами.")
+            return render_template('form_parts.html', part='candidate', candidates=candidates_choice, today=today)
+    except (ProgrammingError, InterfaceError, DatabaseError) as e:
+        return render_template('error.html', error_msg="Произошла ошибка в процессе выполнения!")
 
 @interview_bp.route('/save', methods=['POST'])
 @check_role
 def save_interview():
+    """Сохранение собеседования в базу данных."""
     if not request.form.get('save'):
         return redirect(url_for('interview_bp.add_interview'))
-
-    print('---DEBUG SESSION BEFORE SAVE---')
-    print('Employee:', session.get('employee'))
-    print('Opening:', session.get('opening'))
-    print('Candidate:', session.get('candidate'))
-    print('Date:', session.get('date'))
-
     try:
         with UseDatabase(session['db_config']) as cursor:
-            # Получение ID сотрудника
-            employee_id = get_id_from_session(session['employee'][0], session['employee'][1])
-            if not employee_id:
-                return render_template('error.html', error_msg="Сотрудник не выбран!")
-            
-            # Получение ID вакансии
-            opening_id = get_id_from_session(session['opening'][0], session['opening'][1])
-            if not opening_id:
-                return render_template('error.html', error_msg="Вакансия не выбрана!")
-            
-            # Получение ID кандидата
-            candidate_id = get_id_from_session(session['candidate'][0], session['candidate'][1])
-            if not candidate_id:
-                return render_template('error.html', error_msg="Кандидат не выбран!")
+            # Получение данных из сессии
+            employee_id = session['employee'][1]
+            opening_id = session['opening'][1]
+            candidate_id = session['candidate'][1]
+            date = session['date']
 
-            # SQL-запрос для таблицы interviews
-            _SQL = '''INSERT INTO interviews (date, employee_id, opening_id) 
-                      VALUES (%s, %s, %s);'''
-            cursor.execute(_SQL, (session['date'], employee_id, opening_id))
+            # Проверка параметров (отладка)
+            print(f"DEBUG: date={date}, employee_id={employee_id}, opening_id={opening_id}, candidate_id={candidate_id}")
 
-            # Получение ID собеседования
+            # Проверка уникальности
+            query_check = provider.get('check_interview.sql')
+            cursor.execute(query_check, (date, employee_id, opening_id, candidate_id))
+            if cursor.fetchone()[0] > 0:
+                return render_template('error.html', error_msg="Собеседование уже существует!")
+
+            # Вставка в interviews
+            query_insert_interview = provider.get('insert_interview.sql')
+            cursor.execute(query_insert_interview, (date, employee_id, opening_id))
             interview_id = cursor.lastrowid
 
-            # SQL-запрос для таблицы interview_details
-            _SQL = '''INSERT INTO interview_details (candidate_id, interview_id, result)
-                      VALUES (%s, %s, %s);'''
-            cursor.execute(_SQL, (candidate_id, interview_id, 0))
+            # Вставка в interview_details
+            query_insert_details = provider.get('insert_interview_details.sql')
+            cursor.execute(query_insert_details, (candidate_id, interview_id))
 
-            # Явное подтверждение транзакции
+            # Обновление статуса отклика
+            update_response_status(cursor, opening_id, candidate_id, 'собеседование назначено')
             cursor.connection.commit()
 
-            print('---INTERVIEW SAVED SUCCESSFULLY---')
-            print('Interview ID:', interview_id)
+            return render_template('result.html')
 
-    except (ProgrammingError, InterfaceError, DatabaseError) as e:
-        print('---SAVE ERROR:', e)
-        return render_template('error.html', error_msg="Не удалось сохранить данные!")
-
-    # Очистка сессии
-    session.pop('employee', None)
-    session.pop('opening', None)
-    session.pop('candidate', None)
-    session.pop('date', None)
-
-    return render_template('result.html')
+    except Exception as e:
+        return render_template('error.html', error_msg=f"Ошибка сохранения: {str(e)}")
+    finally:
+        # Очистка данных из сессии
+        for key in ['employee', 'opening', 'candidate', 'date']:
+            session.pop(key, None)

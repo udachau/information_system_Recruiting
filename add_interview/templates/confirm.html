@@ -2,35 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles/oform.css">
     <title>Подтверждение данных</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles/oform.css">
 </head>
 <body>
     <div class="form-container">
         <h1>Подтверждение данных</h1>
-        <table>
-            <tr>
-                <td>Сотрудник:</td>
-                <td>{{ employee }}</td>
-            </tr>
-            <tr>
-                <td>Вакансия:</td>
-                <td>{{ opening }}</td>
-            </tr>
-            <tr>
-                <td>Кандидат:</td>
-                <td>{{ candidate }}</td>
-            </tr>
-            <tr>
-                <td>Дата:</td>
-                <td>{{ date }}</td>
-            </tr>
-        </table>
-        <form method="post" action="/save">
-            <input type="hidden" name="save" value="1">
-            <input type="submit" value="Сохранить">
+        <fieldset>
+            <legend>Данные собеседования:</legend>
+            <p><strong>Сотрудник:</strong> {{ employee }}</p>
+            <p><strong>Вакансия:</strong> {{ opening }}</p>
+            <p><strong>Кандидат:</strong> {{ candidate }}</p>
+            <label for="date">Дата:</label>
+            <input type="date" id="date" name="date" min="{{ today }}" value="{{ date }}" required>
+        </fieldset>
+
+        <form action="{{ url_for('interview_bp.save_interview') }}" method="POST">
+            <input type="submit" name="save" value="Сохранить">
         </form>
-        <button class="return" onclick="window.location.href='/';">Назад в главное меню</button>
+
+        <form action="{{ url_for('menu') }}" method="GET">
+            <input type="submit" value="Отменить запись" class="btn-cancel">
+        </form>
     </div>
 </body>
 </html>

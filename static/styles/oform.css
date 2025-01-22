@@ -120,3 +120,45 @@ button.return:hover {
         transform: scale(1);
     }
 }
+
+.btn-edit {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #388e3c;
+}
+
+.btn-cancel {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #e57373;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #d32f2f;
+}

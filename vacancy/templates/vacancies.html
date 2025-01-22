@@ -26,7 +26,8 @@
                         <td>{{ vacancy.job_name }}</td>
                         <td>{{ vacancy.open_date }}</td>
                         <td>
-                            <form action="{{ url_for('vacancy_bp.respond_to_vacancy', opening_id=vacancy.opening_id) }}" method="POST">
+                            <form action="{{ url_for('vacancy_bp.respond_to_vacancy') }}" method="POST">
+                                <input type="hidden" name="opening_id" value="{{ vacancy.opening_id }}">
                                 <button type="submit" class="btn btn-respond">Откликнуться</button>
                             </form>
                         </td>

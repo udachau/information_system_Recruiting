@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список отчетов</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles/style.css">
+</head>
+<body>
+    <h1>Доступные типы отчетов</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Тип отчета</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report['name'] }}</td>
+                <td>
+                    {% if can_view %}
+                    <!-- Форма для просмотра отчета -->
+                    <form method="get" action="{{ url_for('report_bp.view_report', report_type=report.report_type) }}" style="display:inline-block;">
+                        <label>
+                            Начало:
+                            <input type="date" name="start_date" required>
+                        </label>
+                        <label>
+                            Конец:
+                            <input type="date" name="end_date" required>
+                        </label>
+                        <button type="submit">Посмотреть</button>
+                    </form>
+                    {% endif %}
+
+                    {% if can_create %}
+                    <!-- Форма для создания отчета -->
+                    <form method="post" action="{{ url_for('report_bp.create_report', report_type=report.report_type) }}" style="display:inline-block;">
+                        <label>
+                            Начало:
+                            <input type="date" name="start_date" required>
+                        </label>
+                        <label>
+                            Конец:
+                            <input type="date" name="end_date" required>
+                        </label>
+                        <button type="submit">Создать</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button onclick="window.location.href='/'">Назад в главное меню</button>
+</body>
+</html>
